@@ -50,7 +50,7 @@ variable "dhcp_options_display_name" {
 
 variable "custom_search_domain" {
   description = "A domain name where the custom option can be applied"
-  
+
 }
 /********** DHCP Options Variables **********/
 
