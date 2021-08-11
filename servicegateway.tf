@@ -14,10 +14,4 @@ resource "oci_core_service_gateway" "PrivateServiceGateway" {
   vcn_id       = oci_core_vcn.VCN.id
   display_name = var.service_gateway_display_name
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
-  }
-  defined_tags = {
-    "${oci_identity_tag_namespace.devrel.name}.${oci_identity_tag.release.name}" = local.release
-  }
 }

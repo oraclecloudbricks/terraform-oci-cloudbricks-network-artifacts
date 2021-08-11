@@ -13,10 +13,4 @@ resource "oci_core_local_peering_gateway" "LocalPeeringGateway" {
   display_name   = count.index < "10" ? "${var.lpg_display_name_base}${var.label_zs[0]}${count.index + 1}" : "${var.lpg_display_name_base}${var.label_zs[1]}${count.index + 1}"
   peer_id        = local.peered_lpg_ocid
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
-  }
-  defined_tags = {
-    "${oci_identity_tag_namespace.devrel.name}.${oci_identity_tag.release.name}" = local.release
-  }
 }

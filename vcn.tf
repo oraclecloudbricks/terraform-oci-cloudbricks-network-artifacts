@@ -13,10 +13,4 @@ resource "oci_core_vcn" "VCN" {
   display_name   = var.vcn_display_name
   dns_label      = substr(replace(tostring(var.vcn_display_name), "_", ""), 0, 15)
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
-  }
-  defined_tags = {
-    "${oci_identity_tag_namespace.devrel.name}.${oci_identity_tag.release.name}" = local.release
-  }
 }

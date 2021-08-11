@@ -19,12 +19,6 @@ resource "oci_core_subnet" "PrivateSubnet" {
   prohibit_public_ip_on_vnic = var.is_private_subnet_private
   dns_label                  = substr(replace(tostring(each.key), "_", ""), 0, 15)
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
-  }
-  defined_tags = {
-    "${oci_identity_tag_namespace.devrel.name}.${oci_identity_tag.release.name}" = local.release
-  }
 }
 
 

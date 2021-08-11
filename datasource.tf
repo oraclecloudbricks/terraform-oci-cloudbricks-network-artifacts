@@ -58,17 +58,7 @@ data "oci_core_vcns" "PEEREDVCN" {
   }
 }
 
-data "oci_identity_region_subscriptions" "home_region_subscriptions" {
-  tenancy_id = var.tenancy_ocid
-
-  filter {
-    name   = "is_home_region"
-    values = [true]
-  }
-}
-
 locals {
-  release = "1.0"
   # Compartment OCID Local Accessor
   nw_compartment_ocid        = lookup(data.oci_identity_compartments.NWCOMPARTMENTS.compartments[0], "id")
   peered_nw_compartment_ocid = length(data.oci_identity_compartments.PEEREDNWCOMPARTMENTS.compartments) > 0 ? lookup(data.oci_identity_compartments.PEEREDNWCOMPARTMENTS.compartments[0], "id") : null
