@@ -25,12 +25,6 @@ resource "oci_core_security_list" "PrivateSecurityList" {
     stateless   = var.private_security_list_ingress_security_rules_stateless
   }
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
-  }
-  defined_tags = {
-    "${oci_identity_tag_namespace.devrel.name}.${oci_identity_tag.release.name}" = local.release
-  }
 }
 
 resource "oci_core_security_list" "PublicSecurityList" {
@@ -52,10 +46,4 @@ resource "oci_core_security_list" "PublicSecurityList" {
     stateless   = var.public_security_list_ingress_security_rules_stateless
   }
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
-  }
-  defined_tags = {
-    "${oci_identity_tag_namespace.devrel.name}.${oci_identity_tag.release.name}" = local.release
-  }
 }

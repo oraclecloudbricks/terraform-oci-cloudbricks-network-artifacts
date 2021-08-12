@@ -24,12 +24,6 @@ resource "oci_core_route_table" "PrivateRouteTable" {
     destination_type  = var.private_route_table_svc_route_rules_destination_type
   }
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
-  }
-  defined_tags = {
-    "${oci_identity_tag_namespace.devrel.name}.${oci_identity_tag.release.name}" = local.release
-  }
 }
 
 resource "oci_core_route_table" "PublicRouteTable" {
@@ -50,10 +44,4 @@ resource "oci_core_route_table" "PublicRouteTable" {
     destination_type  = var.public_route_table_svc_route_rules_destination_type
   }
 
-  lifecycle {
-    ignore_changes = [defined_tags["Oracle-Tags.CreatedBy"], defined_tags["Oracle-Tags.CreatedOn"]]
-  }
-  defined_tags = {
-    "${oci_identity_tag_namespace.devrel.name}.${oci_identity_tag.release.name}" = local.release
-  }
 }
