@@ -100,6 +100,39 @@ is_spoke                 = true
 ########## IS SPOKE ##########
 ```
 
+If implementation is intended to be a basic VCN
+
+```shell
+########## IS BASIC VCN ##########
+########## SAMPLE TFVAR FILE ##########
+########## PROVIDER SPECIFIC VARIABLES ##########
+region           = "foo-region-1"
+tenancy_ocid     = "ocid1.tenancy.oc1..abcdefg"
+user_ocid        = "ocid1.user.oc1..aaaaaaabcdefg"
+fingerprint      = "fo:oo:ba:ar:ba:ar"
+private_key_path = "/absolute/path/to/api/key/your_api_key.pem"
+########## PROVIDER SPECIFIC VARIABLES ##########
+
+########## ARTIFACT SPECIFIC VARIABLES ##########
+vcn_cidr_blocks                     = ["10.0.0.0/16"]
+private_subnet_cidr_block_map       = { "pvtsn01" : "10.0.0.0/23", "pvtsn02" : "10.0.2.0/23", "pvtsn03" : "10.0.4.0/23" }
+public_subnet_cidr_block_map        = { "pubsn01" : "10.0.6.0/23", "pubsn02" : "10.0.8.0/23", "pubsn03" : "10.0.10.0/23" }
+vcn_display_name                    = "VCN_DISPLAY_NAME"
+vcn_network_compartment_name        = "MY_NETWORK_COMPARTMENT"
+dhcp_options_display_name           = "DHCP_Options"
+custom_search_domain                = "test.com"
+private_route_table_display_name    = "pvt_rt"
+public_route_table_display_name     = "pub_rt"
+private_security_list_display_name  = "pvt_sl"
+public_security_list_display_name   = "pub_sl"
+service_gateway_display_name        = "SVC_GW"
+nat_gateway_display_name            = "NAT_GW"
+internet_gateway_display_name       = "INET_GW"
+########## ARTIFACT SPECIFIC VARIABLES ##########
+########## SAMPLE TFVAR FILE ##########
+########## IS BASIC VCN ##########
+```
+
 ### Variable specific considerations
 - Cloudbricks framework allows a single VCN per each compartment. Breaking this rule, will prevent the code to work correctly
 - When filling variables `private_subnet_cidr_block_map` and `public_subnet_cidr_block_map` it expected to provide a comma separated tuple containing first the name of the subnet and then it's corresponding CIDR block

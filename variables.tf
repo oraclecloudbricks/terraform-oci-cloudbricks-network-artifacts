@@ -292,6 +292,7 @@ variable "public_route_table_inet_route_rules_destination_type" {
 /********** Dynamic Routing Gateway Variables **********/
 variable "drg_display_name" {
   description = "Dynamic Routing Gateway display name"
+  default     = ""
 }
 
 variable "hub_vcn_display_name" {
@@ -311,7 +312,7 @@ variable "peered_vcn_cidr_blocks" {
 
 variable "is_spoke" {
   description = "Boolean that describes if the compartment is a spoke or not"
-  default     = true
+  default     = false
 }
 
 /********** Dynamic Routing Gateway Variables **********/

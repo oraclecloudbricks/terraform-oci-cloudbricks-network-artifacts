@@ -8,13 +8,14 @@
 
 
 resource "oci_core_drg" "DynamicRoutingGateway" {
-  count          = length(local.hub_drg) > 0 ? 0 : 1
+  count          = var.drg_display_name != "" && length(local.hub_drg) == 0 ? 1 : 0
   compartment_id = local.nw_compartment_ocid
 
   display_name = var.drg_display_name
 }
 
 resource "oci_core_drg_attachment" "DynamicRoutingGatewayAttachment" {
+  count      = var.drg_display_name != "" ? 1 : 0
   depends_on = [oci_core_drg.DynamicRoutingGateway]
   drg_id     = length(local.hub_drg) > 0 ? local.hub_drg[0].id : oci_core_drg.DynamicRoutingGateway[0].id
 
