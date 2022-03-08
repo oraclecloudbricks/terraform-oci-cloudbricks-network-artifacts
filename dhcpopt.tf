@@ -6,8 +6,6 @@
 # Registry: https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_dhcp_options
 
 
-
-
 resource "oci_core_dhcp_options" "DHCPOptions" {
   compartment_id = local.nw_compartment_ocid
   options {
