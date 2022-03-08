@@ -13,12 +13,12 @@ The following cloud brick enables you to create a fully operational network with
 - NAT Gateway, associated to private subnet
 - Service Gateway, associated two both private a public instances. Public instance will only contain storage services route and private will contain all services on Availability Domain
 - Internet Gateway, associated to public subnet
-- Local Peering Gateway placeholder
+- Dynamic Routing Gateway placeholder
 
 ## Reference Architecture
 The following is the reference architecture associated to this brick
 
-![Reference Architecture](./images/Bricks_Architectures-network.png)
+![Reference Architecture](./images/Bricks_Architectures-network.jpg)
 
 ### Prerequisites
 - Pre-existent unique Compartment to holster the network
@@ -42,8 +42,8 @@ private_key_path = "/absolute/path/to/api/key/your_api_key.pem"
 vcn_cidr_blocks                     = ["10.0.0.0/16"]
 private_subnet_cidr_block_map       = { "pvtsn01" : "10.0.0.0/23", "pvtsn02" : "10.0.2.0/23", "pvtsn03" : "10.0.4.0/23" }
 public_subnet_cidr_block_map        = { "pubsn01" : "10.0.6.0/23", "pubsn02" : "10.0.8.0/23", "pubsn03" : "10.0.10.0/23" }
-vcn_display_name                    = "VCN_DISPLAY_NAME"
-vcn_network_compartment_name        = "MY_NETWORK_COMPARTMENT"
+vcn_display_name                    = "HUB_VCN_DISPLAY_NAME"
+vcn_network_compartment_name        = "MY_HUB_NETWORK_COMPARTMENT"
 dhcp_options_display_name           = "DHCP_Options"
 custom_search_domain                = "test.com"
 private_route_table_display_name    = "pvt_rt"
@@ -53,11 +53,10 @@ public_security_list_display_name   = "pub_sl"
 service_gateway_display_name        = "SVC_GW"
 nat_gateway_display_name            = "NAT_GW"
 internet_gateway_display_name       = "INET_GW"
-lpg_count                           = 1
-lpg_display_name_base               = "LPG"
-peered_vcn_network_compartment_name = ""
-peered_lpg_display_name             = ""
-is_spoke                            = false
+
+drg_display_name       = "DRG"
+peered_vcn_cidr_blocks = ["11.0.0.0/16"]
+is_spoke               = false
 ########## ARTIFACT SPECIFIC VARIABLES ##########
 ########## SAMPLE TFVAR FILE ##########
 ########## IS HUB ##########
@@ -91,11 +90,11 @@ public_security_list_display_name   = "pub_hub_sl"
 service_gateway_display_name        = "SVC_GW"
 nat_gateway_display_name            = "NAT_GW"
 internet_gateway_display_name       = "INET_GW"
-lpg_count                           = 1
-lpg_display_name_base               = "LPG"
-peered_vcn_network_compartment_name = "HUB_VCN_NAME"
-peered_lpg_display_name             = "HUB01_LPG02"
-is_spoke                            = true
+
+drg_display_name         = "DRG"
+hub_vcn_compartment_name = "MY_HUB_NETWORK_COMPARTMENT"
+hub_vcn_display_name     = "HUB_VCN_DISPLAY_NAME"
+is_spoke                 = true
 ########## ARTIFACT SPECIFIC VARIABLES ##########
 ########## SAMPLE TFVAR FILE ##########
 ########## IS SPOKE ##########
@@ -103,14 +102,15 @@ is_spoke                            = true
 
 ### Variable specific considerations
 - Cloudbricks framework allows a single VCN per each compartment. Breaking this rule, will prevent the code to work correctly
-- This code allows to create either a HUB or SPOKE Network. If a hub is in place, then variable `is_spoke` will be set to `true`
 - When filling variables `private_subnet_cidr_block_map` and `public_subnet_cidr_block_map` it expected to provide a comma separated tuple containing first the name of the subnet and then it's corresponding CIDR block
 - Variable `vcn_network_compartment_name` expect a single unique compartment name. Neglecting this step, will break the framework
 - Variable `custom_search_domain` allows to overload the value of a custom DHCP provider
-- `lpg_count` variable allows to create Local Peering Gateway placeholders inside the VCN. If provisioning a HUB, then this number needs to be as high as environments are connected to this HUB. For example, if environments are PRD, DEV and QA, then this number needs to be set to `3`. On the other hand, if provisioning a SPOKE, this number always needs to be set to `1`
-- Variable `lpg_display_name_base` represents the basic constructor of the LPG Name. This allows internally to create correlative values for LPG. In case of provisioning a HUB, leave this as `HUB_LPG`, in any other case, set this variable to `ENV_LPG` where `ENV` is the name of Environment being provisioned, i.e `PRD_LPG`
-- If provisioning a SPOKE, variable `peered_vcn_network_compartment_name` needs to reference the display name of the HUB VCN and `peered_lpg_display_name` needs to correspond to one unique of the LPG created on HUB. If provisioning a spoke, these variables needs to be blank as `""`
+- Variable `drg_display_name` must be the same between the HUBS and SPOKES created. This DRG will be responsible for enabling transit routing.
+- Variable `peered_vcn_cidr_blocks` must be supplied when provisioning a HUB. This must be a list of the CIDR blocks, one for each of the SPOKEs that will be connected to the HUB. Example: `["11.0.0.0/16", "12.0.0.0/16"]` Now two SPOKES could be connected to this HUB with the given CIDR blocks.
+- Variable `hub_vcn_compartment_name` must be supplied when provisioning a SPOKE. This specifies the location of the vcn that the SPOKE will connect to.
+- Variable `hub_vcn_display_name` must be supplied when provisioning a SPOKE. This specifies the name of the vcn that the SPOKE will connect to.
 - If provisioning a HUB, variable `is_spoke` needs to be `false`. If a SPOKE is in place this variable needs to be set to `true`
+
 
 ---
 ## Sample provider
@@ -140,20 +140,17 @@ provider "oci" {
 }
 ```
 ---
+
 ## Variable documentation
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.5 |
+No requirements.
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_oci"></a> [oci](#provider\_oci) | 4.36.0 |
-| <a name="provider_oci.home"></a> [oci.home](#provider\_oci.home) | 4.36.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.1.0 |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | 4.66.0 |
 
 ## Modules
 
@@ -164,8 +161,9 @@ No modules.
 | Name | Type |
 |------|------|
 | [oci_core_dhcp_options.DHCPOptions](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_dhcp_options) | resource |
+| [oci_core_drg.DynamicRoutingGateway](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg) | resource |
+| [oci_core_drg_attachment.DynamicRoutingGatewayAttachment](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_drg_attachment) | resource |
 | [oci_core_internet_gateway.INETGateway](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_internet_gateway) | resource |
-| [oci_core_local_peering_gateway.LocalPeeringGateway](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_local_peering_gateway) | resource |
 | [oci_core_nat_gateway.NATGateway](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_nat_gateway) | resource |
 | [oci_core_route_table.PrivateRouteTable](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_route_table) | resource |
 | [oci_core_route_table.PublicRouteTable](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_route_table) | resource |
@@ -175,16 +173,12 @@ No modules.
 | [oci_core_subnet.PrivateSubnet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_subnet) | resource |
 | [oci_core_subnet.PublicSubnet](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_subnet) | resource |
 | [oci_core_vcn.VCN](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/core_vcn) | resource |
-| [oci_identity_tag.release](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_tag) | resource |
-| [oci_identity_tag_namespace.devrel](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/resources/identity_tag_namespace) | resource |
-| [random_id.tag](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) | resource |
-| [oci_core_local_peering_gateways.PEERLPG](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_local_peering_gateways) | data source |
+| [oci_core_drgs.DRG](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_drgs) | data source |
 | [oci_core_services.ALLSERVICES](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_services) | data source |
 | [oci_core_services.STORAGESERVICES](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_services) | data source |
 | [oci_core_vcns.PEEREDVCN](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/core_vcns) | data source |
 | [oci_identity_compartments.NWCOMPARTMENTS](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/identity_compartments) | data source |
 | [oci_identity_compartments.PEEREDNWCOMPARTMENTS](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/identity_compartments) | data source |
-| [oci_identity_region_subscriptions.home_region_subscriptions](https://registry.terraform.io/providers/hashicorp/oci/latest/docs/data-sources/identity_region_subscriptions) | data source |
 
 ## Inputs
 
@@ -192,19 +186,17 @@ No modules.
 |------|-------------|------|---------|:--------:|
 | <a name="input_custom_search_domain"></a> [custom\_search\_domain](#input\_custom\_search\_domain) | A domain name where the custom option can be applied | `any` | n/a | yes |
 | <a name="input_dhcp_options_display_name"></a> [dhcp\_options\_display\_name](#input\_dhcp\_options\_display\_name) | (Optional) (Updatable) A user-friendly name. Does not have to be unique, and it's changeable. Avoid entering confidential information. | `any` | n/a | yes |
+| <a name="input_drg_display_name"></a> [drg\_display\_name](#input\_drg\_display\_name) | Dynamic Routing Gateway display name | `any` | n/a | yes |
 | <a name="input_fingerprint"></a> [fingerprint](#input\_fingerprint) | API Key Fingerprint for user\_ocid derived from public API Key imported in OCI User config | `any` | n/a | yes |
+| <a name="input_hub_vcn_compartment_name"></a> [hub\_vcn\_compartment\_name](#input\_hub\_vcn\_compartment\_name) | The compartment which houses the HUB VCN to peer with. | `string` | `""` | no |
+| <a name="input_hub_vcn_display_name"></a> [hub\_vcn\_display\_name](#input\_hub\_vcn\_display\_name) | Name of the HUB VCN that each spoke uses as a reference. | `string` | `""` | no |
 | <a name="input_internet_gateway_display_name"></a> [internet\_gateway\_display\_name](#input\_internet\_gateway\_display\_name) | (Optional) (Updatable) A user-friendly name. Does not have to be unique, and it's changeable. Avoid entering confidential information. | `any` | n/a | yes |
 | <a name="input_internet_gateway_enabled"></a> [internet\_gateway\_enabled](#input\_internet\_gateway\_enabled) | Describes if the Internet Gateway is enabled upon creation or not | `bool` | `true` | no |
 | <a name="input_is_private_subnet_private"></a> [is\_private\_subnet\_private](#input\_is\_private\_subnet\_private) | Describes if the subnet is private or not | `bool` | `true` | no |
 | <a name="input_is_public_subnet_private"></a> [is\_public\_subnet\_private](#input\_is\_public\_subnet\_private) | Describes if the subnet is private or not | `bool` | `false` | no |
 | <a name="input_is_spoke"></a> [is\_spoke](#input\_is\_spoke) | Boolean that describes if the compartment is a spoke or not | `bool` | `true` | no |
-| <a name="input_label_zs"></a> [label\_zs](#input\_label\_zs) | Auxiliary variable to concatenate with lpg number | `list(any)` | <pre>[<br>  "0",<br>  ""<br>]</pre> | no |
-| <a name="input_lpg_count"></a> [lpg\_count](#input\_lpg\_count) | Number of LPG to create | `number` | `1` | no |
-| <a name="input_lpg_display_name_base"></a> [lpg\_display\_name\_base](#input\_lpg\_display\_name\_base) | Local Peering Gateway Display Name Base | `any` | n/a | yes |
 | <a name="input_nat_gateway_display_name"></a> [nat\_gateway\_display\_name](#input\_nat\_gateway\_display\_name) | NAT Gateway Display Name | `any` | n/a | yes |
-| <a name="input_peered_lpg_display_name"></a> [peered\_lpg\_display\_name](#input\_peered\_lpg\_display\_name) | Display name of peered LPG | `string` | `""` | no |
-| <a name="input_peered_vcn_display_name"></a> [peered\_vcn\_display\_name](#input\_peered\_vcn\_display\_name) | Name of the peered VCN where the peered LPG is created | `string` | `""` | no |
-| <a name="input_peered_vcn_network_compartment_name"></a> [peered\_vcn\_network\_compartment\_name](#input\_peered\_vcn\_network\_compartment\_name) | Name of the compartment where the VCN that's going to be peered is | `string` | `""` | no |
+| <a name="input_peered_vcn_cidr_blocks"></a> [peered\_vcn\_cidr\_blocks](#input\_peered\_vcn\_cidr\_blocks) | The spoke CIDR blocks that the hub VCN will attach to | `list` | `[]` | no |
 | <a name="input_private_key_path"></a> [private\_key\_path](#input\_private\_key\_path) | Private Key Absolute path location where terraform is executed | `any` | n/a | yes |
 | <a name="input_private_route_table_display_name"></a> [private\_route\_table\_display\_name](#input\_private\_route\_table\_display\_name) | Private Route Table Display Name. | `any` | n/a | yes |
 | <a name="input_private_route_table_nat_route_rules_description"></a> [private\_route\_table\_nat\_route\_rules\_description](#input\_private\_route\_table\_nat\_route\_rules\_description) | (Optional) (Updatable) An optional description of your choice for the rule. | `string` | `"NAT Gateway default route"` | no |
@@ -255,8 +247,8 @@ No modules.
 | Name | Description |
 |------|-------------|
 | <a name="output_dhcp_options"></a> [dhcp\_options](#output\_dhcp\_options) | DHCP Options associated to VCN |
+| <a name="output_dynamic_routing_gateway"></a> [dynamic\_routing\_gateway](#output\_dynamic\_routing\_gateway) | Dynamic Routing Gateway Associated to VCNs |
 | <a name="output_internet_gateway"></a> [internet\_gateway](#output\_internet\_gateway) | Internet Gateway component |
-| <a name="output_local_peering_gateways"></a> [local\_peering\_gateways](#output\_local\_peering\_gateways) | Local Peering Gateways Associated to VCN |
 | <a name="output_nat_gateway"></a> [nat\_gateway](#output\_nat\_gateway) | NAT Gateway component |
 | <a name="output_network_compartment"></a> [network\_compartment](#output\_network\_compartment) | Compartment where network resides on |
 | <a name="output_private_route_table"></a> [private\_route\_table](#output\_private\_route\_table) | Private Route Table associated to subnets |
