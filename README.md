@@ -76,9 +76,9 @@ private_key_path = "/absolute/path/to/api/key/your_api_key.pem"
 ########## PROVIDER SPECIFIC VARIABLES ##########
 
 ########## ARTIFACT SPECIFIC VARIABLES ##########
-vcn_cidr_blocks                     = ["12.0.0.0/16"]
-private_subnet_cidr_block_map       = { "pvtsn01" : "12.0.0.0/23", "pvtsn02" : "12.0.2.0/23", "pvtsn03" : "12.0.4.0/23" }
-public_subnet_cidr_block_map        = { "pubsn01" : "12.0.6.0/23", "pubsn02" : "12.0.8.0/23", "pubsn03" : "12.0.10.0/23" }
+vcn_cidr_blocks                     = ["11.0.0.0/16"]
+private_subnet_cidr_block_map       = { "pvtsn01" : "11.0.0.0/23", "pvtsn02" : "11.0.2.0/23", "pvtsn03" : "11.0.4.0/23" }
+public_subnet_cidr_block_map        = { "pubsn01" : "11.0.6.0/23", "pubsn02" : "11.0.8.0/23", "pubsn03" : "11.0.10.0/23" }
 vcn_display_name                    = "VCN_DISPLAY_NAME"
 vcn_network_compartment_name        = "MY_NETWORK_COMPARTMENT"
 dhcp_options_display_name           = "DHCP_Options"
