@@ -66,8 +66,7 @@ output "dhcp_options" {
   value       = oci_core_dhcp_options.DHCPOptions
 }
 
-output "local_peering_gateways" {
-  description = "Local Peering Gateways Associated to VCN"
-  value       = oci_core_local_peering_gateway.LocalPeeringGateway
-
+output "dynamic_routing_gateway" {
+  description = "Dynamic Routing Gateway Associated to VCNs"
+  value       = oci_core_drg.DynamicRoutingGateway
 }
