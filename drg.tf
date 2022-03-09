@@ -8,7 +8,7 @@
 
 
 resource "oci_core_drg" "DynamicRoutingGateway" {
-  count          = var.drg_display_name != "" && length(local.hub_drg) == 0 ? 1 : 0
+  count          = var.drg_display_name != "" && !var.is_spoke ? 1 : 0
   compartment_id = local.nw_compartment_ocid
 
   display_name = var.drg_display_name
