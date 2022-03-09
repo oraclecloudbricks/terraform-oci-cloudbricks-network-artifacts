@@ -13,5 +13,4 @@ resource "oci_core_service_gateway" "PrivateServiceGateway" {
   }
   vcn_id       = oci_core_vcn.VCN.id
   display_name = var.service_gateway_display_name
-
 }

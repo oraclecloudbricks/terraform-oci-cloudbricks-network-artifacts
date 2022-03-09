@@ -289,42 +289,33 @@ variable "public_route_table_inet_route_rules_destination_type" {
 
 /********** Public Internet Gateway Variables **********/
 
-/********** Local Peering Gateway Variables **********/
-variable "lpg_display_name_base" {
-  description = "Local Peering Gateway Display Name Base"
-}
-
-variable "peered_lpg_display_name" {
-  description = "Display name of peered LPG"
+/********** Dynamic Routing Gateway Variables **********/
+variable "drg_display_name" {
+  description = "Dynamic Routing Gateway display name"
   default     = ""
 }
 
-variable "peered_vcn_display_name" {
-  description = "Name of the peered VCN where the peered LPG is created"
+variable "hub_vcn_display_name" {
+  description = "Name of the HUB VCN that each spoke uses as a reference."
   default     = ""
 }
 
-variable "peered_vcn_network_compartment_name" {
-  description = "Name of the compartment where the VCN that's going to be peered is"
+variable "hub_vcn_compartment_name" {
+  description = "The compartment which houses the HUB VCN to peer with."
   default     = ""
 }
 
-variable "label_zs" {
-  type        = list(any)
-  description = "Auxiliary variable to concatenate with lpg number"
-  default     = ["0", ""]
-}
-
-variable "lpg_count" {
-  description = "Number of LPG to create"
-  default     = 1
+variable "peered_vcn_cidr_blocks" {
+  description = "The spoke CIDR blocks that the hub VCN will attach to"
+  default     = []
 }
 
 variable "is_spoke" {
   description = "Boolean that describes if the compartment is a spoke or not"
-  default     = true
+  default     = false
 }
-/********** Local Peering Gateway Variables **********/
+
+/********** Dynamic Routing Gateway Variables **********/
 
 /********** Brick Variables **********/
 

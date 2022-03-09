@@ -18,7 +18,6 @@ resource "oci_core_subnet" "PrivateSubnet" {
   security_list_ids          = [oci_core_security_list.PrivateSecurityList.id]
   prohibit_public_ip_on_vnic = var.is_private_subnet_private
   dns_label                  = substr(replace(tostring(each.key), "_", ""), 0, 15)
-
 }
 
 
@@ -34,5 +33,4 @@ resource "oci_core_subnet" "PublicSubnet" {
   security_list_ids          = [oci_core_security_list.PublicSecurityList.id]
   prohibit_public_ip_on_vnic = var.is_public_subnet_private
   dns_label                  = substr(replace(tostring(each.key), "_", ""), 0, 15)
-
 }
