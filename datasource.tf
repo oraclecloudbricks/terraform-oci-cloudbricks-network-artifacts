@@ -60,11 +60,11 @@ data "oci_core_drgs" "DRG" {
 
 locals {
   # Compartment OCID Local Accessor
-  nw_compartment_ocid        = lookup(data.oci_identity_compartments.NWCOMPARTMENTS.compartments[0], "id")
-  peered_nw_compartment_ocid = length(data.oci_identity_compartments.PEEREDNWCOMPARTMENTS.compartments) > 0 ? lookup(data.oci_identity_compartments.PEEREDNWCOMPARTMENTS.compartments[0], "id") : null
-  nw_compartment_object      = data.oci_identity_compartments.NWCOMPARTMENTS.compartments[0]
+  nw_compartment_ocid        = var.is_orm ? var.vcn_network_compartment_name : (length(data.oci_identity_compartments.NWCOMPARTMENTS.compartments) > 0 ? data.oci_identity_compartments.NWCOMPARTMENTS.compartments[0].id : "")
+  peered_nw_compartment_ocid = var.is_orm ? var.hub_vcn_compartment_name : (length(data.oci_identity_compartments.PEEREDNWCOMPARTMENTS.compartments) > 0 ? data.oci_identity_compartments.PEEREDNWCOMPARTMENTS.compartments[0].id : "")
+  nw_compartment_object      = var.is_orm ? var.vcn_network_compartment_name : (length(data.oci_identity_compartments.NWCOMPARTMENTS.compartments) > 0 ? data.oci_identity_compartments.NWCOMPARTMENTS.compartments[0] : "")
 
-  # Service Gateway OCID Local Accessor 
+  # Service Gateway OCID Local Accessor
   all_service_list_ocid               = data.oci_core_services.ALLSERVICES.services.0.id
   storage_service_list_ocid           = data.oci_core_services.STORAGESERVICES.services.0.id
   all_service_gateway_destination     = data.oci_core_services.ALLSERVICES.services[0]["cidr_block"]

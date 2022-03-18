@@ -317,5 +317,10 @@ variable "is_spoke" {
 
 /********** Dynamic Routing Gateway Variables **********/
 
+variable "is_orm" {
+  description = "Boolean that describes if the network is being provisoned by ORM. This shouldn't ever be set to true manually."
+  default     = false
+}
+
 /********** Brick Variables **********/
 
