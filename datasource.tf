@@ -62,7 +62,6 @@ locals {
   # Compartment OCID Local Accessor
   nw_compartment_ocid        = var.is_orm ? var.vcn_network_compartment_name : (length(data.oci_identity_compartments.NWCOMPARTMENTS.compartments) > 0 ? data.oci_identity_compartments.NWCOMPARTMENTS.compartments[0].id : "")
   peered_nw_compartment_ocid = var.is_orm ? var.hub_vcn_compartment_name : (length(data.oci_identity_compartments.PEEREDNWCOMPARTMENTS.compartments) > 0 ? data.oci_identity_compartments.PEEREDNWCOMPARTMENTS.compartments[0].id : "")
-  nw_compartment_object      = var.is_orm ? var.vcn_network_compartment_name : (length(data.oci_identity_compartments.NWCOMPARTMENTS.compartments) > 0 ? data.oci_identity_compartments.NWCOMPARTMENTS.compartments[0] : "")
 
   # Service Gateway OCID Local Accessor
   all_service_list_ocid               = data.oci_core_services.ALLSERVICES.services.0.id

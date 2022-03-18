@@ -20,11 +20,6 @@ output "public_subnets" {
   value       = oci_core_subnet.PublicSubnet
 }
 
-output "network_compartment" {
-  description = "Compartment where network resides on"
-  value       = local.nw_compartment_object
-}
-
 output "service_gateway" {
   description = "Service Gateway component"
   value       = oci_core_service_gateway.PrivateServiceGateway
