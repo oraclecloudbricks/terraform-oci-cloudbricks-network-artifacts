@@ -7,7 +7,7 @@
 
 
 resource "oci_core_subnet" "PrivateSubnet" {
-  for_each       = var.private_subnet_cidr_block_map
+  for_each       = local.private_subnet_map
   cidr_block     = each.value
   compartment_id = local.nw_compartment_ocid
   vcn_id         = oci_core_vcn.VCN.id
@@ -22,7 +22,7 @@ resource "oci_core_subnet" "PrivateSubnet" {
 
 
 resource "oci_core_subnet" "PublicSubnet" {
-  for_each       = var.public_subnet_cidr_block_map
+  for_each       = local.public_subnet_map
   cidr_block     = each.value
   compartment_id = local.nw_compartment_ocid
   vcn_id         = oci_core_vcn.VCN.id

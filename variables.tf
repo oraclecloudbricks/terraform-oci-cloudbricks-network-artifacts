@@ -185,7 +185,6 @@ variable "public_route_table_display_name" {
 
 /********** Private Subnet Variables **********/
 variable "private_subnet_cidr_block_map" {
-  type        = map(any)
   description = "Map of CIDR Blocks associated to private subnets and it's corresponding names"
 }
 
@@ -197,7 +196,6 @@ variable "is_private_subnet_private" {
 
 /********** Public Subnet Variables **********/
 variable "public_subnet_cidr_block_map" {
-  type        = map(any)
   description = "Map of CIDR Blocks associated to private subnets and it's corresponding names"
 }
 
