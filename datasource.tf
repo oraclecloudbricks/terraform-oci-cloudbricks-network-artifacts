@@ -74,10 +74,13 @@ locals {
   hub_vcn_cidr_blocks = length(data.oci_core_vcns.PEEREDVCN.virtual_networks) > 0 ? lookup(data.oci_core_vcns.PEEREDVCN.virtual_networks[0], "cidr_blocks") : []
 
   # Subnet Map Accessors
-  private_subnet_map = var.is_orm ? tomap("{${var.private_subnet_cidr_block_map}}") : var.private_subnet_cidr_block_map
-  public_subnet_map = var.is_orm ? tomap("{${var.public_subnet_cidr_block_map}}") : var.public_subnet_cidr_block_map
+  # private_subnet_map = var.is_orm ? tomap("{${var.private_subnet_cidr_block_map}}") : var.private_subnet_cidr_block_map
+  # public_subnet_map  = var.is_orm ? tomap("{${var.public_subnet_cidr_block_map}}") : var.public_subnet_cidr_block_map
 
-  # {for item in [for item in split(",", trimspace("hub01_pubsn01: 10.0.6.0/23, hub01_pubsn02: 10.0.8.0/23, hub01_pubsn03: 10.0.10.0/23")) :{name = trimspace(split(":", item)[0]),cidr = trimspace(split(":", item)[1])}] : item.name => item.cidr}
+  #hub01_pvtsn01 = 10.0.0.0/23, hub01_pvtsn02 = 10.0.2.0/23, hub01_pvtsn03 = 10.0.4.0/23
+
+  private_subnet_map = var.is_orm ? ({for item in [for item in split(",", trimspace(var.private_subnet_cidr_block_map)) :{name = trimspace(split("=", item)[0]),cidr = trimspace(split("=", item)[1])}] : item.name => item.cidr}) : var.private_subnet_cidr_block_map
+  public_subnet_map = var.is_orm ? ({for item in [for item in split(",", trimspace(var.public_subnet_cidr_block_map)) :{name = trimspace(split("=", item)[0]),cidr = trimspace(split("=", item)[1])}] : item.name => item.cidr}) : var.public_subnet_cidr_block_map
 
   # private_subnet_map = var.is_orm ? { for item in [for item in split(",", trimspace(var.private_subnet_cidr_block_map)) : { name = trimspace(split(":", item)[0]), cidr = trimspace(split(":", item)[1]) }] : item.name => item.cidr } : var.private_subnet_cidr_block_map
 
