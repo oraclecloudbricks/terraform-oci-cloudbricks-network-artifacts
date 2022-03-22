@@ -79,8 +79,8 @@ locals {
 
   #hub01_pvtsn01 = 10.0.0.0/23, hub01_pvtsn02 = 10.0.2.0/23, hub01_pvtsn03 = 10.0.4.0/23
 
-  private_subnet_map = var.is_orm ? ({for item in [for item in split(",", trimspace(var.private_subnet_cidr_block_map)) :{name = trimspace(split("=", item)[0]),cidr = trimspace(split("=", item)[1])}] : item.name => item.cidr}) : var.private_subnet_cidr_block_map
-  public_subnet_map = var.is_orm ? ({for item in [for item in split(",", trimspace(var.public_subnet_cidr_block_map)) :{name = trimspace(split("=", item)[0]),cidr = trimspace(split("=", item)[1])}] : item.name => item.cidr}) : var.public_subnet_cidr_block_map
+  private_subnet_map = var.is_orm ? ({for item in [for item in split(",", trimspace(var.private_subnet_cidr_block_map)) :{name = trimspace(split("=", item)[0]),cidr = trimspace(split("=", item)[1])}] : item.name => item.cidr}) : tomap(var.private_subnet_cidr_block_map)
+  public_subnet_map = var.is_orm ? ({for item in [for item in split(",", trimspace(var.public_subnet_cidr_block_map)) :{name = trimspace(split("=", item)[0]),cidr = trimspace(split("=", item)[1])}] : item.name => item.cidr}) : tomap(var.public_subnet_cidr_block_map)
 
   # private_subnet_map = var.is_orm ? { for item in [for item in split(",", trimspace(var.private_subnet_cidr_block_map)) : { name = trimspace(split(":", item)[0]), cidr = trimspace(split(":", item)[1]) }] : item.name => item.cidr } : var.private_subnet_cidr_block_map
 

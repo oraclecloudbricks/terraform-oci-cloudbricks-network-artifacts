@@ -8,7 +8,7 @@
 resource "oci_core_vcn" "VCN" {
   compartment_id = local.nw_compartment_ocid
   # Remove spacing and split into a list when passed by ORM
-  cidr_blocks    = var.is_orm ? split(",", replace("10.0.0.0/16, 11.0.0.0/16", "/\\s+/", "")) : var.vcn_cidr_blocks
+  cidr_blocks    = var.is_orm ? split(",", replace("10.0.0.0/16, 11.0.0.0/16", "/\\s+/", "")) : tolist(var.vcn_cidr_blocks)
   display_name   = var.vcn_display_name
   dns_label      = substr(replace(tostring(var.vcn_display_name), "_", ""), 0, 15)
 }
