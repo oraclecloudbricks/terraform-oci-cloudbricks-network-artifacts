@@ -33,7 +33,7 @@ resource "oci_core_route_table" "PrivateRouteTable" {
   }
 
   dynamic "route_rules" {
-    for_each = var.peered_vcn_cidr_blocks
+    for_each = var.is_spoke ? [] : (var.is_orm ? split(",", replace(var.peered_vcn_cidr_blocks, "/\\s+/", "")) : tolist(var.peered_vcn_cidr_blocks))
     content {
       network_entity_id = oci_core_drg.DynamicRoutingGateway[0].id
       destination       = route_rules.value
@@ -69,7 +69,7 @@ resource "oci_core_route_table" "PublicRouteTable" {
   }
 
   dynamic "route_rules" {
-    for_each = var.peered_vcn_cidr_blocks
+    for_each = var.is_spoke ? [] : (var.is_orm ? split(",", replace(var.peered_vcn_cidr_blocks, "/\\s+/", "")) : tolist(var.peered_vcn_cidr_blocks))
     content {
       network_entity_id = oci_core_drg.DynamicRoutingGateway[0].id
       destination       = route_rules.value
